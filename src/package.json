@@ -1,7 +1,0 @@
-"scripts": {
-  "start": "node src/app.js",
-  "dev": "nodemon src/app.js",
-  "db:migrate": "prisma migrate dev",
-  "db:seed": "node prisma/seed.js",
-  "db:studio": "prisma studio"
-}
