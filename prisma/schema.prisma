@@ -53,3 +53,8 @@ model TeamMember {
   team      Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
   pokemon   Pokemon @relation(fields: [pokemonId], references: [id])
 }
+
+model Test {
+  id      Int    @id @default(autoincrement())
+  message String
+}
