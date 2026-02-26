@@ -4,9 +4,12 @@ import { parse } from 'csv-parse'
 import { fileURLToPath } from 'url'
 import path from 'path'
 
+// Create Prisma instance to talk to DB
 const prisma = new PrismaClient()
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Cleans messy numbers from CSV
+// 
 const parseInteger = (value) => {
   if (!value) return null
   const num = parseInt(value.toString().replace(/[^0-9]/g, ''))
@@ -18,6 +21,7 @@ const run = async () => {
 
   const records = []
 
+  // Read CSV file into array of objects
   await new Promise((resolve, reject) => {
     createReadStream(path.join(__dirname, 'data/pokemonDB_dataset.csv'))
       .pipe(parse({ columns: true, skip_empty_lines: true }))
@@ -28,12 +32,14 @@ const run = async () => {
 
   console.log(`Found ${records.length} records`)
 
+        // Loop through cvs fields
   for (const row of records) {
     try {
       await prisma.pokemon.upsert({
         where: { name: row['Pokemon'] },
         update: {},
         create: {
+            // Map csv fields to the database
           name: row['Pokemon'],
           type1: row['Type']?.split(',')[0]?.trim() || 'Unknown',
           type2: row['Type']?.split(',')[1]?.trim() || null,
