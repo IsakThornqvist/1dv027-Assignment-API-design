@@ -33,4 +33,14 @@ export const typeDefs = `#graphql
     id: ID!
     email: String!
   }
+
+  type AuthPayload {
+    token: String!
+    user: User!
+  }
+
+  type Mutation {
+    register(email: String!, password: String!): AuthPayload!
+    login(email: String!, password: String!): AuthPayload!
+  }
 `
