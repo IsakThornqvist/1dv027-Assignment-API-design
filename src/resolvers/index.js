@@ -11,6 +11,12 @@ export const resolvers = {
     },
     allPokemon: async() => {
       return await prisma.pokemon.findMany()
+    },
+    pokemonByType: async (_, { type1 }) => {
+      return prisma.pokemon.findMany({
+        where: { type1: type1 }
+      })
+      
     }
   }
 }
