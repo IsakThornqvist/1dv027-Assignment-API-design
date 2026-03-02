@@ -25,5 +25,6 @@ export const typeDefs = `#graphql
   type Query {
     hello: String
     pokemon(id: ID!): Pokemon
+    allPokemon: [Pokemon!]
   }
 `

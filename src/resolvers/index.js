@@ -8,6 +8,9 @@ export const resolvers = {
       return prisma.pokemon.findUnique({
         where: { id: parseInt(id) }
       })
+    },
+    allPokemon: async() => {
+      return await prisma.pokemon.findMany()
     }
   }
 }
