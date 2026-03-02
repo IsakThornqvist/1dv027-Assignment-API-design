@@ -12,9 +12,24 @@ export const resolvers = {
     },
     pokemonByType: async (_, { type1 }) => {
       return prisma.pokemon.findMany({
-        where: { type1: type1 }
+        where: {
+          type1: {
+            equals: type1,
+            mode: "insensitive"
+          }
+        }
       })
-      
-    }
+    },
+    searchPokemon: async(_, { name }) => {
+      return prisma.pokemon.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: "insensitive"
+          }
+        }
+      })
+    },
+
   }
 }

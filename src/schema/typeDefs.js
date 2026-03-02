@@ -26,5 +26,6 @@ export const typeDefs = `#graphql
     pokemonById(id: ID!): Pokemon
     allPokemon: [Pokemon!]
     pokemonByType(type1: String!): [Pokemon!]!
+    searchPokemon(name: String!): [Pokemon!]!
   }
 `
