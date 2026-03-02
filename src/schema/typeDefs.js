@@ -23,8 +23,7 @@ export const typeDefs = `#graphql
   }
 
   type Query {
-    hello: String
-    pokemon(id: ID!): Pokemon
+    pokemonById(id: ID!): Pokemon
     allPokemon: [Pokemon!]
     pokemonByType(type1: String!): [Pokemon!]!
   }
