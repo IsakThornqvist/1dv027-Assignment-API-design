@@ -40,10 +40,10 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 
 | Field | Description |
 |---|---|
-| **Dataset source** | *e.g. Kaggle, public API, CSV, etc.* |
-| **Primary resource (CRUD)** | *e.g. Movies (id, title, release_year, genre, description)* |
-| **Secondary resource 1 (read-only)** | *e.g. Actors (id, name, movies_played)* |
-| **Secondary resource 2 (read-only)** | *e.g. Ratings (id, text, movie)* |
+| **Dataset source** | Kaggle, Pokemon API, CSV* |
+| **Primary resource (CRUD)** | Team (id, name, user_id, user, memebers, createdAt) |
+| **Secondary resource 1 (read-only)** | Pokemon (id, name, etc) |
+| **Secondary resource 2 (read-only)** | User (id, email, teams) |
 
 
 ## Design Decisions
