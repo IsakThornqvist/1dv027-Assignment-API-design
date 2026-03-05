@@ -1,13 +1,14 @@
-import { ApolloServer } from '@apollo/server'
-import { expressMiddleware } from '@apollo/server/express4'
-import express from 'express'
+import { ApolloServer } from "@apollo/server"
+import { expressMiddleware } from "@apollo/server/express4"
+import express from "express"
 // For frontend later on
-import cors from 'cors'
-import dotenv from 'dotenv'
+import cors from "cors"
+import dotenv from "dotenv"
 // GraphQL schemas
-import { typeDefs } from './schema/typeDefs.js'
+import { typeDefs } from "./schema/typeDefs.js"
 // Function that actually detches the data
-import { resolvers } from './resolvers/index.js'
+import { resolvers } from "./resolvers/index.js"
+import jwt from "jsonwebtoken"
 
 dotenv.config()
 
@@ -16,7 +17,6 @@ const app = express()
 app.use(cors()) // Allows cross origin requests
 app.use(express.json()) // Allows JSON in req body
 
-
 const server = new ApolloServer({
   typeDefs, // What data exists
   resolvers, // How to fetch this data
@@ -24,11 +24,24 @@ const server = new ApolloServer({
 
 await server.start()
 
+app.use("/graphql", expressMiddleware(server, {
+    context: async ({ req }) => {
+      const token = req.headers.authorization?.split(" ")[1]
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET)
+          return { userId: decoded.userId }
+        } catch {
+          return { userId: null }
+        }
+      }
+      return { userId: null}
+    },
+  }),
+)
 
-app.use('/graphql', expressMiddleware(server))
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' })
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" })
 })
 
 const PORT = process.env.PORT || 4000
