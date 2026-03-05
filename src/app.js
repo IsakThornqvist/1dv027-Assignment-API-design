@@ -25,17 +25,21 @@ const server = new ApolloServer({
 await server.start()
 
 app.use("/graphql", expressMiddleware(server, {
+  // req.headers.autorization = Bearer token here
+  // [1] to only get the token
     context: async ({ req }) => {
       const token = req.headers.authorization?.split(" ")[1]
       if (token) {
         try {
+          // jwt.verify looks at the signature and that token is not old
+          // if it is correct return the payload => { userId: 1 }
           const decoded = jwt.verify(token, process.env.JWT_SECRET)
           return { userId: decoded.userId }
         } catch {
-          return { userId: null }
+          return { userId: null } // returns if token is expired or not correct
         }
       }
-      return { userId: null}
+      return { userId: null} // no token sent
     },
   }),
 )
