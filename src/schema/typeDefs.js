@@ -36,6 +36,19 @@ export const typeDefs = `#graphql
     email: String!
   }
 
+  type TeamMember {
+    id: ID!
+    pokemon: Pokemon!
+  }
+
+  type Team {
+    id: ID!
+    name: String!
+    user: User!
+    members: [TeamMember!]!
+    createdAt: String!
+  }
+
   type AuthPayload {
     token: String!
     user: User!
@@ -43,7 +56,11 @@ export const typeDefs = `#graphql
 
   type Mutation {
     register(email: String!, password: String!): AuthPayload!
-    
+
     login(email: String!, password: String!): AuthPayload!
+
+     addPokemonToTeam(teamId: ID!, pokemonId: ID!) :Team!
+    
+     removePokemonFromTeam(teamId: ID!, pokemonId: ID!) :Team!
   }
 `
