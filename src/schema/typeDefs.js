@@ -59,14 +59,14 @@ export const typeDefs = `#graphql
 
     login(email: String!, password: String!): AuthPayload!
 
-     addPokemonToTeam(teamId: ID!, pokemonId: ID!) :Team!
+    addPokemonToTeam(teamId: ID!, pokemonId: ID!) :Team!
     
-     removePokemonFromTeam(teamId: ID!, pokemonId: ID!) :Team!
+    removePokemonFromTeam(teamId: ID!, pokemonId: ID!) :Team!
 
     createTeam(name: String!): Team!
 
     deleteTeam(teamId: ID!): Team!
-    
+
     updateTeam(teamId: ID!, name: String!): Team!
   }
 `
