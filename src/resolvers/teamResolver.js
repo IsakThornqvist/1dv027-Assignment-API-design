@@ -1,6 +1,4 @@
 import prisma from "../prisma.js"
-import jwt from "jsonwebtoken"
-import { pokemonResolver } from "./pokemonResolver.js"
 
 export const teamResolver = {
   Mutation: {
@@ -114,6 +112,55 @@ export const teamResolver = {
         },
       })
       return updatedTeam
+    },
+
+    removePokemonFromTeam: async (_, { teamId, pokemonId }, context) => {
+      if (!context.userId) {
+        throw new Error("No authenticaition!")
+      }
+      // Get the team, include members is used to check length
+      const team = await prisma.team.findUnique({
+        where: { id: parseInt(teamId) },
+        include: {
+          members: true,
+        },
+      })
+      // Make sure the team exists
+      if (!team) {
+        throw new Error("Team does not exist!")
+      }
+      // Look at the ownership
+      if (team.userId !== context.userId) {
+        throw new Error("Team does not exist!")
+      }
+      // Make sure the pokemon is in the database
+      const pokemon = await prisma.pokemon.findUnique({
+        where: { id: parseInt(pokemonId) },
+      })
+      if (!pokemon) {
+        throw new Error("Pokemon does not exist!")
+      }
+
+      await prisma.teamMember.deleteMany({
+        where: {
+          teamId: parseInt(teamId),
+          pokemonId: parseInt(pokemonId),
+        },
+      })
+
+      return prisma.team.findUnique({
+        where: {
+          id: parseInt(teamId),
+        },
+        include: {
+          user: true,
+          members: {
+            include: {
+              pokemon: true,
+            },
+          },
+        },
+      })
     },
   },
   Query: {},
