@@ -117,12 +117,20 @@ export const teamResolver = {
         },
       })
     },
+    
   },
 
   Query: {
     allTeams: async() => {
         return await prisma.team.findMany()
     },
+
+    teamById: async (_, { teamId }) => {
+      return prisma.team.findUnique({
+        where: { id: parseInt(teamId) }
+      })
+    },
+
 
   },
 }
