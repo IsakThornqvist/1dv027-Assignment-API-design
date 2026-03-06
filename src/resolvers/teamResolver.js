@@ -1,11 +1,12 @@
 import prisma from "../prisma.js"
 import jwt from "jsonwebtoken"
+import { pokemonResolver } from "./pokemonResolver.js"
 
 export const teamResolver = {
   Mutation: {
     createTeam: async (_, { name }, context) => {
-        // contect = { userId: 1 } - comes from jwt in server
-        // the user does not need to send their userId, dont trust the client for this
+      // contect = { userId: 1 } - comes from jwt in server
+      // the user does not need to send their userId, dont trust the client for this
       if (!context.userId) {
         throw new Error("No authenticaition!")
       }
@@ -29,7 +30,7 @@ export const teamResolver = {
     },
 
     addPokemonToTeam: async (_, { teamId, pokemonId }, context) => {
-        // Auth check
+      // Auth check
       if (!context.userId) {
         throw new Error("No authenticaition!")
       }
@@ -79,7 +80,41 @@ export const teamResolver = {
         },
       })
     },
-  },
 
+    updateTeam: async (_, { teamId, name }, context) => {
+      if (!context.userId) {
+        throw new Error("No authenticaition!")
+      }
+      // Get the team, include members is used to check length
+      const team = await prisma.team.findUnique({
+        where: { id: parseInt(teamId) },
+        include: {
+          members: true,
+        },
+      })
+      // Make sure the team exists
+      if (!team) {
+        throw new Error("Team does not exist!")
+      }
+      // Look at the ownership
+      if (team.userId !== context.userId) {
+        throw new Error("Team does not exist!")
+      }
+
+      const updatedTeam = await prisma.team.update({
+        where: { id: parseInt(teamId) },
+        data: { name },
+        include: {
+          user: true,
+          members: {
+            include: {
+              pokemon: true,
+            },
+          },
+        },
+      })
+      return updatedTeam
+    },
+  },
   Query: {},
 }
