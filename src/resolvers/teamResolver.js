@@ -118,5 +118,11 @@ export const teamResolver = {
       })
     },
   },
-  Query: {},
+
+  Query: {
+    allTeams: async() => {
+        return await prisma.team.findMany()
+    },
+
+  },
 }

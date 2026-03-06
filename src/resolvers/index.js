@@ -6,7 +6,8 @@ import { teamResolver } from "./teamResolver.js"
 export const resolvers = {
   Query: {
     ...pokemonResolver.Query,
-    ...registerResolver.Query
+    ...registerResolver.Query,
+    ...teamResolver.Query
   },
 
   Mutation: {
