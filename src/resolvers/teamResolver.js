@@ -1,13 +1,13 @@
 import prisma from "../prisma.js"
+import { checkAuth } from "../validations/teamValidations.js"
+import { getTeamAndVerifyOwnership } from "../validations/teamValidations.js"
 
 export const teamResolver = {
   Mutation: {
     createTeam: async (_, { name }, context) => {
       // contect = { userId: 1 } - comes from jwt in server
       // the user does not need to send their userId, dont trust the client for this
-      if (!context.userId) {
-        throw new Error("No authenticaition!")
-      }
+        checkAuth(context)
 
       return prisma.team.create({
         data: {
@@ -29,24 +29,9 @@ export const teamResolver = {
 
     addPokemonToTeam: async (_, { teamId, pokemonId }, context) => {
       // Auth check
-      if (!context.userId) {
-        throw new Error("No authenticaition!")
-      }
+      checkAuth(context)
       // Get the team, include members is used to check length
-      const team = await prisma.team.findUnique({
-        where: { id: parseInt(teamId) },
-        include: {
-          members: true,
-        },
-      })
-      // Make sure the team exists
-      if (!team) {
-        throw new Error("Team does not exist!")
-      }
-      // Look at the ownership
-      if (team.userId !== context.userId) {
-        throw new Error("Team does not exist!")
-      }
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
       // Make sure the pokemon is in the database
       const pokemon = await prisma.pokemon.findUnique({
         where: { id: parseInt(pokemonId) },
@@ -80,24 +65,9 @@ export const teamResolver = {
     },
 
     updateTeam: async (_, { teamId, name }, context) => {
-      if (!context.userId) {
-        throw new Error("No authenticaition!")
-      }
+      checkAuth(context)
       // Get the team, include members is used to check length
-      const team = await prisma.team.findUnique({
-        where: { id: parseInt(teamId) },
-        include: {
-          members: true,
-        },
-      })
-      // Make sure the team exists
-      if (!team) {
-        throw new Error("Team does not exist!")
-      }
-      // Look at the ownership
-      if (team.userId !== context.userId) {
-        throw new Error("Team does not exist!")
-      }
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
 
       const updatedTeam = await prisma.team.update({
         where: { id: parseInt(teamId) },
@@ -115,24 +85,9 @@ export const teamResolver = {
     },
 
     removePokemonFromTeam: async (_, { teamId, pokemonId }, context) => {
-      if (!context.userId) {
-        throw new Error("No authenticaition!")
-      }
+      checkAuth(context)
       // Get the team, include members is used to check length
-      const team = await prisma.team.findUnique({
-        where: { id: parseInt(teamId) },
-        include: {
-          members: true,
-        },
-      })
-      // Make sure the team exists
-      if (!team) {
-        throw new Error("Team does not exist!")
-      }
-      // Look at the ownership
-      if (team.userId !== context.userId) {
-        throw new Error("Team does not exist!")
-      }
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
       // Make sure the pokemon is in the database
       const pokemon = await prisma.pokemon.findUnique({
         where: { id: parseInt(pokemonId) },
