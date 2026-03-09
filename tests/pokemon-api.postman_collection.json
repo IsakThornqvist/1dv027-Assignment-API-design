@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "08cf8df0-7137-4716-9822-0a8d6b97583d",
+		"name": "Pokemon API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41249587"
+	},
+	"item": [
+		{
+			"name": "Register - success",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"email\", `test_${Date.now()}@test.com`)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Returns token\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.data.register.token).to.be.a(\"string\")\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Returns user email\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.data.register.user.email).to.be.a(\"string\")\r",
+							"})\r",
+							"\r",
+							"const token = pm.response.json().data.register.token\r",
+							"pm.environment.set(\"token\", token)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"query\": \"mutation { register(email: \\\"{{email}}\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
