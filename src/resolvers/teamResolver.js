@@ -8,7 +8,7 @@ export const teamResolver = {
     createTeam: async (_, { name }, context) => {
       // contect = { userId: 1 } - comes from jwt in server
       // the user does not need to send their userId, dont trust the client for this
-      checkAuth(context)
+      checkAuth(context);
 
       return prisma.team.create({
         data: {
@@ -25,24 +25,24 @@ export const teamResolver = {
             },
           },
         },
-      })
+      });
     },
 
     addPokemonToTeam: async (_, { teamId, pokemonId }, context) => {
       // Auth check
-      checkAuth(context)
+      checkAuth(context);
       // Get the team, include members is used to check length
-      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId);
       // Make sure the pokemon is in the database
       const pokemon = await prisma.pokemon.findUnique({
         where: { id: parseInt(pokemonId) },
-      })
+      });
       if (!pokemon) {
-        throw new Error("Pokemon does not exist!")
+        throw new Error("Pokemon does not exist!");
       }
       // Check to make sure team length is not to long
       if (team.members.length >= 6) {
-        throw new Error("Max teamsize is 6!")
+        throw new Error("Max teamsize is 6!");
       }
       // Create the TeamMember row and return the updated team
       return prisma.team.update({
@@ -62,13 +62,13 @@ export const teamResolver = {
             },
           },
         },
-      })
+      });
     },
 
     updateTeam: async (_, { teamId, name }, context) => {
-      checkAuth(context)
+      checkAuth(context);
       // Get the team, include members is used to check length
-      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId);
 
       const updatedTeam = await prisma.team.update({
         where: { id: parseInt(teamId) },
@@ -81,20 +81,20 @@ export const teamResolver = {
             },
           },
         },
-      })
-      return updatedTeam
+      });
+      return updatedTeam;
     },
 
     removePokemonFromTeam: async (_, { teamId, pokemonId }, context) => {
-      checkAuth(context)
+      checkAuth(context);
       // Get the team, include members is used to check length
-      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId);
       // Make sure the pokemon is in the database
       const pokemon = await prisma.pokemon.findUnique({
         where: { id: parseInt(pokemonId) },
-      })
+      });
       if (!pokemon) {
-        throw new Error("Pokemon does not exist!")
+        throw new Error("Pokemon does not exist!");
       }
 
       await prisma.teamMember.deleteMany({
@@ -102,7 +102,7 @@ export const teamResolver = {
           teamId: parseInt(teamId),
           pokemonId: parseInt(pokemonId),
         },
-      })
+      });
 
       return prisma.team.findUnique({
         where: {
@@ -116,12 +116,12 @@ export const teamResolver = {
             },
           },
         },
-      })
+      });
     },
 
     deleteTeam: async (_, { teamId }, context) => {
-      checkAuth(context)
-      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
+      checkAuth(context);
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId);
 
       const removedTeam = await prisma.team.delete({
         where: {
@@ -135,24 +135,33 @@ export const teamResolver = {
             },
           },
         },
-      })
-      return removedTeam
+      });
+      return removedTeam;
     },
   },
 
   Query: {
     allTeams: async () => {
-      return await prisma.team.findMany()
+      return await prisma.team.findMany();
     },
 
-    teamById: async (_, { teamId }) => {
+    teamById: async (_, { teamId }, context) => {
+      checkAuth(context)
       return prisma.team.findUnique({
         where: { id: parseInt(teamId) },
+        include: {
+          user: true,
+          members: {
+            include: {
+              pokemon: true,
+            },
+          },
+        },
       })
     },
 
     myTeams: async (_, __, context) => {
-      checkAuth(context)
+      checkAuth(context);
 
       return prisma.team.findMany({
         where: {
@@ -166,7 +175,7 @@ export const teamResolver = {
             },
           },
         },
-      })
+      });
     },
   },
-}
+};
