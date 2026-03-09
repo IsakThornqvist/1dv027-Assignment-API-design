@@ -1,3 +1,4 @@
+import { parseSchemaCoordinate } from "graphql"
 import prisma from "../prisma.js"
 import { checkAuth } from "../validations/teamValidations.js"
 import { getTeamAndVerifyOwnership } from "../validations/teamValidations.js"
@@ -117,6 +118,27 @@ export const teamResolver = {
         },
       })
     },
+
+    deleteTeam: async (_, { teamId }, context) => {
+        checkAuth(context)
+        const team = await getTeamAndVerifyOwnership(teamId, context.userId)
+
+        const removedTeam = await prisma.team.delete({
+            where: {
+                id: parseInt(teamId)
+            },
+            include: {
+                user: true,
+                members: {
+                    include: {
+                        pokemon: true,
+                    },
+                },
+            },
+        })
+        return removedTeam
+    },
+
     
   },
 
