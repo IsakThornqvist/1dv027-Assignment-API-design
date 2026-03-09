@@ -181,3 +181,14 @@ git add .
 git commit -m "your message"
 git push
 ```
+
+# Mutation
+mutation {
+  register(email: "test@example.com", password: "??????") {
+    token
+    user {
+      id
+      email
+    }
+  }
+}
