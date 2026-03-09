@@ -8,7 +8,7 @@ export const teamResolver = {
     createTeam: async (_, { name }, context) => {
       // contect = { userId: 1 } - comes from jwt in server
       // the user does not need to send their userId, dont trust the client for this
-        checkAuth(context)
+      checkAuth(context)
 
       return prisma.team.create({
         data: {
@@ -120,39 +120,53 @@ export const teamResolver = {
     },
 
     deleteTeam: async (_, { teamId }, context) => {
-        checkAuth(context)
-        const team = await getTeamAndVerifyOwnership(teamId, context.userId)
+      checkAuth(context)
+      const team = await getTeamAndVerifyOwnership(teamId, context.userId)
 
-        const removedTeam = await prisma.team.delete({
-            where: {
-                id: parseInt(teamId)
-            },
+      const removedTeam = await prisma.team.delete({
+        where: {
+          id: parseInt(teamId),
+        },
+        include: {
+          user: true,
+          members: {
             include: {
-                user: true,
-                members: {
-                    include: {
-                        pokemon: true,
-                    },
-                },
+              pokemon: true,
             },
-        })
-        return removedTeam
+          },
+        },
+      })
+      return removedTeam
     },
-
-    
   },
 
   Query: {
-    allTeams: async() => {
-        return await prisma.team.findMany()
+    allTeams: async () => {
+      return await prisma.team.findMany()
     },
 
     teamById: async (_, { teamId }) => {
       return prisma.team.findUnique({
-        where: { id: parseInt(teamId) }
+        where: { id: parseInt(teamId) },
       })
     },
 
+    myTeams: async (_, __, context) => {
+      checkAuth(context)
 
+      return prisma.team.findMany({
+        where: {
+          userId: context.userId,
+        },
+        include: {
+          user: true,
+          members: {
+            include: {
+              pokemon: true,
+            },
+          },
+        },
+      })
+    },
   },
 }

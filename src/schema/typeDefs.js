@@ -30,6 +30,7 @@ export const typeDefs = `#graphql
     allUsers: [User!]!
     teamById(teamId: ID!): Team
     allTeams: [Team!]!
+    myTeams: [Team!]!
   }
 
 
