@@ -14,7 +14,7 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 
 ## Implementation Type
 
-*Specify: REST or GraphQL*
+## GraphQL
 
 ## Links and Testing
 
