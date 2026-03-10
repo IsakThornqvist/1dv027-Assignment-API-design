@@ -147,7 +147,7 @@ export const teamResolver = {
 
     teamById: async (_, { teamId }, context) => {
       checkAuth(context)
-      return prisma.team.findUnique({
+      const team = await prisma.team.findUnique({
         where: { id: parseInt(teamId) },
         include: {
           user: true,
@@ -158,6 +158,8 @@ export const teamResolver = {
           },
         },
       })
+        if (!team) throw new Error("Team not found!")
+         return team
     },
 
     myTeams: async (_, __, context) => {
