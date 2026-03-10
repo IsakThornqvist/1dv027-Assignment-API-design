@@ -65,6 +65,195 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Register - fail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200 or 400\", () => {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Returns error for duplicate email\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.errors).to.be.an(\"array\")\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login - success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Token exists and is a String\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.data.login.token).to.be.a(\"string\")\r",
+							"\r",
+							"    pm.environment.set(\"token\", json.data.login.token)\r",
+							"})\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"query\": \"mutation { login(email: \\\"{{email}}\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login - Fail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200 or 400\", () => {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test(\"Returns error for wrong password\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.errors).to.be.an(\"array\")\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"query\": \"mutation { login(email: \\\"{{email}}\\\", password: \\\"test999\\\") { token user { id email } } }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login - User not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200 or 400\", () => {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Returns error if user is not found\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.errors).to.be.an(\"array\")\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"query\": \"mutation { login(email: \\\"nonexistent@test.com\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
