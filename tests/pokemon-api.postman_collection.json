@@ -254,6 +254,54 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Create Team - No token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200 or 400\", () => {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Returns error if no token provided\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.errors).to.be.an(\"array\")\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"query\": \"mutation { createTeam(name: \\\"Test Team\\\") { id name } }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
