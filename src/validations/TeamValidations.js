@@ -1,5 +1,6 @@
 import prisma from "../prisma.js"
 
+// Auth
 export function checkAuth(context) {
     if (!context.userId) {
        throw new Error("No authenticaition!") 
