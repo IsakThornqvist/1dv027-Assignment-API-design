@@ -685,6 +685,48 @@
 			"response": []
 		},
 		{
+			"name": "Remove Pokemon - Fail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Returns error if no authentication exist\", () => {\r",
+							"    pm.expect(pm.response.json().errors[0].message).to.eql(\"No authenticaition!\")\r",
+							"    \r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"query\": \"mutation { removePokemonFromTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get All Pokemon - Success",
 			"event": [
 				{
