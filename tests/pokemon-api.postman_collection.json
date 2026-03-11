@@ -787,6 +787,48 @@
 			"response": []
 		},
 		{
+			"name": "Get Pokemon by Type - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Request for all pokemon by a type should return all pokemon with that type\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.data.pokemonByType.length).to.eql(45)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"query { pokemonByType(type1: \\\"Steel\\\") { id name type1 } }\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Team - Success",
 			"event": [
 				{
