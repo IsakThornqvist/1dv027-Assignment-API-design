@@ -1,7 +1,7 @@
 import { parseSchemaCoordinate } from "graphql"
 import prisma from "../prisma.js"
-import { checkAuth } from "../validations/teamValidations.js"
-import { getTeamAndVerifyOwnership } from "../validations/teamValidations.js"
+import { checkAuth } from "../validations/teamValidation.js"
+import { getTeamAndVerifyOwnership } from "../validations/teamValidation.js"
 
 export const teamResolver = {
   Mutation: {
