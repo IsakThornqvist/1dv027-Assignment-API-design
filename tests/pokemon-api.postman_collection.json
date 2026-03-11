@@ -631,6 +631,118 @@
 			"response": []
 		},
 		{
+			"name": "Remove Pokemon - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Pokemon was removed from team\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    const members = json.data.removePokemonFromTeam.members\r",
+							"    pm.expect(members).to.have.lengthOf(0)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"query\": \"mutation { removePokemonFromTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Pokemon - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Make sure the Pokemon was fetched\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.data.allPokemon).to.be.an(\"array\")\r",
+							"\r",
+							"    })\r",
+							"\r",
+							"    pm.test(\"Make sure the aArray is not empty\", () => {\r",
+							"        const json = pm.response.json()\r",
+							"        pm.expect(json.data.allPokemon.length).to.be.greaterThan(0)\r",
+							"    })\r",
+							"\r",
+							"    pm.test(\"Make sure the Pokemon has the correct properties\", () => {\r",
+							"        const json = pm.response.json()\r",
+							"        json.data.allPokemon.forEach(pokemon => {\r",
+							"            pm.expect(pokemon).to.have.property(\"id\")\r",
+							"            pm.expect(pokemon).to.have.property(\"name\")\r",
+							"        \r",
+							"    })\r",
+							"\r",
+							"    })"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"query { allPokemon { id name } }\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Team - Success",
 			"event": [
 				{
