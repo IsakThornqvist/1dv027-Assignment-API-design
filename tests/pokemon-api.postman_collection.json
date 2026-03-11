@@ -743,6 +743,50 @@
 			"response": []
 		},
 		{
+			"name": "Pokemon by Id - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status 200\", () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Make sure the Pokemon Id return the correct Pokemon\", () => {\r",
+							"    const json = pm.response.json()\r",
+							"    pm.expect(json.data.pokemonById.name).to.eql(\"Abra\")\r",
+							"    \r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"query\": \"query { pokemonById(id: \\\"3\\\") { id name type1 } }\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Team - Success",
 			"event": [
 				{
