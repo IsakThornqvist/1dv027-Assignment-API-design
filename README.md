@@ -2,7 +2,7 @@
 
 ## Project Name
 
-*Replace with the name of your API project.*
+**Pokemon Team Builder API**
 
 ## Objective
 
@@ -20,10 +20,10 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 
 | | URL / File |
 |---|---|
-| **Production API** | *...* |
-| **API Documentation** | *...* |
-| **GraphQL Playground** (GraphQL only) | *...* |
-| **Postman Collection** | `*.postman_collection.json` |
+| **Production API** | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
+| **API Documentation** | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
+| **GraphQL Playground** (GraphQL only) | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
+| **Postman Collection** | `*pokemon-api.postman_collection.json` |
 | **Production Environment** | `production.postman_environment.json` |
 
 **Examiner can verify tests in one of the following ways:**
@@ -43,7 +43,7 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 | **Dataset source** | Kaggle, Pokemon API, CSV* |
 | **Primary resource (CRUD)** | Team (id, name, user_id, user, memebers, createdAt) |
 | **Secondary resource 1 (read-only)** | Pokemon (id, name, etc) |
-| **Secondary resource 2 (read-only)** | User (id, email, teams) |
+| **Secondary resource 2 (read-only)** | TeamMember (id, teamId, pokemonId, team, pokemon) |
 
 
 ## Design Decisions
