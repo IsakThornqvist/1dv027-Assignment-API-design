@@ -18,7 +18,7 @@
 
         "db:studio": "prisma studio",
 
-        "test": "newman run tests/pokemon-api.postman_collection.json -e tests/local.postman_environment.json"
+        "test": "newman run tests/pokemon-api.postman_collection.json -e tests/production.postman_environment.json"
 
     },
 
