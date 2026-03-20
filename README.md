@@ -26,12 +26,11 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 | **Postman Collection** | `pokemon-api.postman_collection.json` |
 | **Production Environment** | `production.postman_environment.json` |
 
-**Examiner can verify tests in one of the following ways:**
+**Run tests in the following way:**
 
-1. **CI/CD pipeline** — check the pipeline output in GitLab for test results.
-2. **Run manually** — no setup needed:
+1. **Run manually in terminal** — no setup needed:
    ```
-   npx newman run <collection.json> -e production.postman_environment.json
+   npx newman run tests/pokemon-api.postman_collection.json -e tests/production.postman_environment.json
    ```
 
 ## Dataset
@@ -198,7 +197,7 @@ Deploying with Railway and setting up Docker was also a new challenge. Getting e
 
 | Requirement | Issue | Status |
 |---|---|---|
-| API documentation (Swagger/OpenAPI or Postman) | [#6](../../issues/6) | :white_large_square: |
+| API documentation (Swagger/OpenAPI or Postman) | [#6](../../issues/6) | :white_check_mark: |
 | Automated Postman tests (20+ test cases, success + failure) | [#7](../../issues/7) | :white_check_mark: |
 | CI/CD pipeline running tests on every commit/MR | [#8](../../issues/8) | :white_large_square: |
 | Seed script for sample data | [#5](../../issues/5) | :white_check_mark: |
