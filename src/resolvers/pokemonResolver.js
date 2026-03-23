@@ -8,8 +8,11 @@ export const pokemonResolver = {
         where: { id: parseInt(id) }
       })
     },
-    allPokemon: async() => {
-      return await prisma.pokemon.findMany()
+    allPokemon: async (_, { limit, offset }) => {
+      return prisma.pokemon.findMany({
+      take: limit || 100,
+      skip: offset || 0
+     })
     },
     pokemonByType: async (_, { type1 }) => {
       return prisma.pokemon.findMany({

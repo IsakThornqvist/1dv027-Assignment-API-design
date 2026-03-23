@@ -24,7 +24,7 @@ export const typeDefs = `#graphql
 
   type Query {
     pokemonById(id: ID!): Pokemon
-    allPokemon: [Pokemon!]
+    allPokemon(limit: Int, offset: Int): [Pokemon!]
     pokemonByType(type1: String!): [Pokemon!]!
     searchPokemon(name: String!): [Pokemon!]!
     allUsers: [User!]!

@@ -1,1014 +1,1018 @@
 {
-	"info": {
-		"_postman_id": "08cf8df0-7137-4716-9822-0a8d6b97583d",
-		"name": "Pokemon API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "41249587"
-	},
-	"item": [
-		{
-			"name": "Register - success",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"pm.environment.set(\"email\", `test_${Date.now()}@test.com`)"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns token\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.register.token).to.be.a(\"string\")\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns user email\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.register.user.email).to.be.a(\"string\")\r",
-							"})\r",
-							"\r",
-							"const token = pm.response.json().data.register.token\r",
-							"pm.environment.set(\"token\", token)"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { register(email: \\\"{{email}}\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Register - fail",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200 or 400\", () => {\r",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns error for duplicate email\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.errors).to.be.an(\"array\")\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login - success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Token exists and is a String\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.login.token).to.be.a(\"string\")\r",
-							"\r",
-							"    pm.environment.set(\"token\", json.data.login.token)\r",
-							"})\r",
-							"\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { login(email: \\\"{{email}}\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login - Fail",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200 or 400\", () => {\r",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
-							"})\r",
-							"\r",
-							"\r",
-							"pm.test(\"Returns error for wrong password\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.errors).to.be.an(\"array\")\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { login(email: \\\"{{email}}\\\", password: \\\"test999\\\") { token user { id email } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login - User not found",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200 or 400\", () => {\r",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns error if user is not found\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.errors).to.be.an(\"array\")\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { login(email: \\\"nonexistent@test.com\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Team - No token",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200 or 400\", () => {\r",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns error if no token provided\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.errors).to.be.an(\"array\")\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { createTeam(name: \\\"Test Team\\\") { id name } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Team - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Make sure the team id exist\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.createTeam.id).to.be.a(\"string\")\r",
-							"    pm.environment.set(\"teamId\", json.data.createTeam.id)\r",
-							"})\r",
-							"\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { createTeam(name: \\\"Test Team\\\") { id name members { id } user { email } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get My Teams - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns an array of teams\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.myTeams).to.be.an(\"array\")\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Array is not empty\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.myTeams.length).to.be.above(0)\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"query { myTeams { id name members { id } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Team By Id - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"TeamId matches\", () => {\r",
-							"    pm.expect(pm.response.json().team_id).to.eql(pm.environment.get(\"team_id\"))\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"query { teamById(teamId: \\\"{{teamId}}\\\") { id name members { id pokemon { name } } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Team By Id - Not Found",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200 or 400\", () => {\r",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns error incase teamId is not found\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.errors).to.be.an(\"array\")\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"query { teamById(teamId: \\\"99999\\\") { id name } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Team - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"The name of the team was updated\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.updateTeam.name).to.eql(\"Updated Team\")\r",
-							"\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { updateTeam(teamId: \\\"{{teamId}}\\\", name: \\\"Updated Team\\\") { id name } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add Pokemon - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Pokemon was added to team\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.addPokemonToTeam.members.length).to.be.above(0)\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { addPokemonToTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add Pokemon - Invalid Id",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Throw error if wrong id provided\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.errors).to.be.an(\"array\")\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { addPokemonToTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"9999\\\") { id name members { id pokemon { name } } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Remove Pokemon - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Pokemon was removed from team\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    const members = json.data.removePokemonFromTeam.members\r",
-							"    pm.expect(members).to.have.lengthOf(0)\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { removePokemonFromTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Remove Pokemon - Fail - No Auth",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Returns error if no authentication exist\", () => {\r",
-							"    pm.expect(pm.response.json().errors[0].message).to.eql(\"No authenticaition!\")\r",
-							"    \r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { removePokemonFromTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Pokemon - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Make sure the Pokemon was fetched\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.allPokemon).to.be.an(\"array\")\r",
-							"\r",
-							"    })\r",
-							"\r",
-							"    pm.test(\"Make sure the aArray is not empty\", () => {\r",
-							"        const json = pm.response.json()\r",
-							"        pm.expect(json.data.allPokemon.length).to.be.greaterThan(0)\r",
-							"    })\r",
-							"\r",
-							"    pm.test(\"Make sure the Pokemon has the correct properties\", () => {\r",
-							"        const json = pm.response.json()\r",
-							"        json.data.allPokemon.forEach(pokemon => {\r",
-							"            pm.expect(pokemon).to.have.property(\"id\")\r",
-							"            pm.expect(pokemon).to.have.property(\"name\")\r",
-							"        \r",
-							"    })\r",
-							"\r",
-							"    })"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"query\": \"query { allPokemon { id name } }\" }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Pokemon by Id - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Make sure the Pokemon Id return the correct Pokemon\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.pokemonById.name).to.eql(\"Abra\")\r",
-							"    \r",
-							"})\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"query\": \"query { pokemonById(id: \\\"3\\\") { id name type1 } }\" }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Pokemon by Type - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Request for all pokemon by a type should return all pokemon with that type\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.pokemonByType.length).to.eql(45)\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"query\": \"query { pokemonByType(type1: \\\"Steel\\\") { id name type1 } }\" }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Search Pokemon",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Searching for Pokemon should only return pokemon that matches the name provided\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.searchPokemon.length).to.eql(9)\r",
-							"    \r",
-							"})\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"query\": \"query { searchPokemon(name: \\\"char\\\") { id name } }\" }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Team - Success",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status 200\", () => {\r",
-							"    pm.response.to.have.status(200)\r",
-							"})\r",
-							"\r",
-							"pm.test(\"Team was deleted successfully\", () => {\r",
-							"    const json = pm.response.json()\r",
-							"    pm.expect(json.data.deleteTeam.id).to.exist\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { deleteTeam(teamId: \\\"{{teamId}}\\\") { id name } }\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}",
-					"host": [
-						"{{baseUrl}}"
-					]
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "08cf8df0-7137-4716-9822-0a8d6b97583d",
+    "name": "Pokemon API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41249587"
+  },
+  "item": [
+    {
+      "name": "Register - success",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"email\", `test_${Date.now()}@test.com`)"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns token\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.register.token).to.be.a(\"string\")\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns user email\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.register.user.email).to.be.a(\"string\")\r",
+              "})\r",
+              "\r",
+              "const token = pm.response.json().data.register.token\r",
+              "pm.environment.set(\"token\", token)"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { register(email: \\\"{{email}}\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register - fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200 or 400\", () => {\r",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns error for duplicate email\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.errors).to.be.an(\"array\")\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Token exists and is a String\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.login.token).to.be.a(\"string\")\r",
+              "\r",
+              "    pm.environment.set(\"token\", json.data.login.token)\r",
+              "})\r",
+              "\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { login(email: \\\"{{email}}\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login - Fail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200 or 400\", () => {\r",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 400])\r",
+              "})\r",
+              "\r",
+              "\r",
+              "pm.test(\"Returns error for wrong password\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.errors).to.be.an(\"array\")\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { login(email: \\\"{{email}}\\\", password: \\\"test999\\\") { token user { id email } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login - User not found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 404\", () => {\r",
+              "    pm.response.to.have.status(404)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns error if user is not found\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.errors).to.be.an(\"array\")\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { login(email: \\\"nonexistent@test.com\\\", password: \\\"test123\\\") { token user { id email } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Team - No token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 401\", () => {\r",
+              "    pm.response.to.have.status(401)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns error if no token provided\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.errors).to.be.an(\"array\")\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { createTeam(name: \\\"Test Team\\\") { id name } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Team - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Make sure the team id exist\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.createTeam.id).to.be.a(\"string\")\r",
+              "    pm.environment.set(\"teamId\", json.data.createTeam.id)\r",
+              "})\r",
+              "\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { createTeam(name: \\\"Test Team\\\") { id name members { id } user { email } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get My Teams - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns an array of teams\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.myTeams).to.be.an(\"array\")\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Array is not empty\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.myTeams.length).to.be.above(0)\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"query { myTeams { id name members { id } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Team By Id - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"TeamId matches\", () => {\r",
+              "    pm.expect(pm.response.json().team_id).to.eql(pm.environment.get(\"team_id\"))\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"query { teamById(teamId: \\\"{{teamId}}\\\") { id name members { id pokemon { name } } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Team By Id - Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 404\", () => {\r",
+              "    pm.response.to.have.status(404)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns error incase teamId is not found\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.errors).to.be.an(\"array\")\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"query { teamById(teamId: \\\"99999\\\") { id name } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Team - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"The name of the team was updated\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.updateTeam.name).to.eql(\"Updated Team\")\r",
+              "\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { updateTeam(teamId: \\\"{{teamId}}\\\", name: \\\"Updated Team\\\") { id name } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Pokemon - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Pokemon was added to team\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.addPokemonToTeam.members.length).to.be.above(0)\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { addPokemonToTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Pokemon - Invalid Id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 404\", () => {\r",
+              "    pm.response.to.have.status(404)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Throw error if wrong id provided\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.errors).to.be.an(\"array\")\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { addPokemonToTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"9999\\\") { id name members { id pokemon { name } } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Remove Pokemon - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Pokemon was removed from team\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    const members = json.data.removePokemonFromTeam.members\r",
+              "    pm.expect(members).to.have.lengthOf(0)\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { removePokemonFromTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Remove Pokemon - Fail - No Auth",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 401\", () => {\r",
+              "    pm.response.to.have.status(401)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Returns error if no authentication exist\", () => {\r",
+              "    pm.expect(pm.response.json().errors[0].message).to.eql(\"No authenticaition!\")\r",
+              "    \r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { removePokemonFromTeam(teamId: \\\"{{teamId}}\\\", pokemonId: \\\"1\\\") { id name members { id pokemon { name } } } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Pokemon - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Make sure the Pokemon was fetched\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.allPokemon).to.be.an(\"array\")\r",
+              "\r",
+              "    })\r",
+              "\r",
+              "    pm.test(\"Make sure the aArray is not empty\", () => {\r",
+              "        const json = pm.response.json()\r",
+              "        pm.expect(json.data.allPokemon.length).to.be.greaterThan(0)\r",
+              "    })\r",
+              "\r",
+              "    pm.test(\"Make sure the Pokemon has the correct properties\", () => {\r",
+              "        const json = pm.response.json()\r",
+              "        json.data.allPokemon.forEach(pokemon => {\r",
+              "            pm.expect(pokemon).to.have.property(\"id\")\r",
+              "            pm.expect(pokemon).to.have.property(\"name\")\r",
+              "        \r",
+              "    })\r",
+              "\r",
+              "    })"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"query\": \"query { allPokemon { id name } }\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Pokemon by Id - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Make sure the Pokemon Id return the correct Pokemon\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.pokemonById.name).to.eql(\"Abra\")\r",
+              "    \r",
+              "})\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"query\": \"query { pokemonById(id: \\\"3\\\") { id name type1 } }\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Pokemon by Type - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Request for all pokemon by a type should return all pokemon with that type\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.pokemonByType.length).to.eql(45)\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"query\": \"query { pokemonByType(type1: \\\"Steel\\\") { id name type1 } }\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search Pokemon",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Searching for Pokemon should only return pokemon that matches the name provided\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.searchPokemon.length).to.eql(9)\r",
+              "    \r",
+              "})\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"query\": \"query { searchPokemon(name: \\\"char\\\") { id name } }\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Team - Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status 200\", () => {\r",
+              "    pm.response.to.have.status(200)\r",
+              "})\r",
+              "\r",
+              "pm.test(\"Team was deleted successfully\", () => {\r",
+              "    const json = pm.response.json()\r",
+              "    pm.expect(json.data.deleteTeam.id).to.exist\r",
+              "})"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"query\": \"mutation { deleteTeam(teamId: \\\"{{teamId}}\\\") { id name } }\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
 }
