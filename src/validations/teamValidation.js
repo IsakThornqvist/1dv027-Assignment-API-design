@@ -1,9 +1,13 @@
 import prisma from "../prisma.js"
+import { GraphQLError } from 'graphql'
 
-// Auth
+
+
 export function checkAuth(context) {
     if (!context.userId) {
-       throw new Error("No authenticaition!") 
+       throw new GraphQLError("No authenticaition!", {
+        extensions: { code: "UNAUTHENTICATED", http: { status: 401 }}
+       }) 
     }
 }
 
@@ -16,10 +20,14 @@ export async function getTeamAndVerifyOwnership(teamId, userId) {
     })
 
     if (!team) {
-        throw new Error('Team does not exist!')
+        throw new GraphQLError('Team does not exist!', {
+            extensions: { code: "NOT_FOUND", http: { status: 404 }}
+        })
     }
     if (team.userId !== userId) {
-        throw new Error('Not authorized!')
+        throw new GraphQLError('Not authorized!', {
+            extensions: { code: "UNAUTHENTICATED", http: { status: 401 }}
+        })
     }
     return team
 }

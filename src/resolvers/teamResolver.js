@@ -1,4 +1,5 @@
 import { parseSchemaCoordinate } from "graphql"
+import { GraphQLError } from 'graphql'
 import prisma from "../prisma.js"
 import { checkAuth } from "../validations/teamValidation.js"
 import { getTeamAndVerifyOwnership } from "../validations/teamValidation.js"
@@ -38,11 +39,14 @@ export const teamResolver = {
         where: { id: parseInt(pokemonId) },
       });
       if (!pokemon) {
-        throw new Error("Pokemon does not exist!");
-      }
+        throw new GraphQLError("Pokemon does not exist!", {
+          extensions: { code: "NOT_FOUND", http: { status: 404 }}
+      })}
       // Check to make sure team length is not to long
       if (team.members.length >= 6) {
-        throw new Error("Max teamsize is 6!");
+        throw new GraphQLError("Max teamsize is 6!", {
+          extensions: { code: "BAD_USER_INPUT", http: { status: 400 }}
+        })
       }
       // Create the TeamMember row and return the updated team
       return prisma.team.update({
@@ -94,7 +98,9 @@ export const teamResolver = {
         where: { id: parseInt(pokemonId) },
       });
       if (!pokemon) {
-        throw new Error("Pokemon does not exist!");
+        throw new GraphQLError("Pokemon does not exist!", {
+          extensions: { code: "NOT_FOUND", http: { status: 404 }}
+        })
       }
 
       await prisma.teamMember.deleteMany({
@@ -158,7 +164,9 @@ export const teamResolver = {
           },
         },
       })
-        if (!team) throw new Error("Team not found!")
+        if (!team) throw new GraphQLError("Team not found!", {
+          extensions: { code: "NOT_FOUND", http: { status: 404 }}
+        })
          return team
     },
 

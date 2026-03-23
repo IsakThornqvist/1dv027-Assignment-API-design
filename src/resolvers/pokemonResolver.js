@@ -1,5 +1,6 @@
 import prisma from "../prisma.js"
 
+
 export const pokemonResolver = {
   Query: {
     pokemonById: async (_, { id }) => {
