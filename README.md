@@ -22,7 +22,6 @@ The API includes three main resources: Pokemon (read-only), User, and Team (full
 **Run tests in the following way:**
 
 1. **Run manually in terminal** — no setup needed:
-- Clone the repository and run:
    ```
    npx newman run tests/pokemon-api.postman_collection.json -e tests/production.postman_environment.json
    ```
@@ -35,7 +34,7 @@ The API includes three main resources: Pokemon (read-only), User, and Team (full
 | Field | Description |
 |---|---|
 | **Dataset source** | Kaggle, Dataset of 32000 Pokemon Images & CSV, JSON https://www.kaggle.com/datasets/divyanshusingh369/complete-pokemon-library-32k-images-and-csv/data |
-| **Primary resource (CRUD)** | Team (id, name, user_id, user, memebers, createdAt) |
+| **Primary resource (CRUD)** | Team (id, name, user_id, user, members, createdAt) |
 | **Secondary resource 1 (read-only)** | Pokemon (id, name, etc) |
 | **Secondary resource 2 (read-only)** | User (id, email, teams) |
 
