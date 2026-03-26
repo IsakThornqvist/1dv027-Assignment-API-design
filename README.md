@@ -5,30 +5,24 @@
 **Pokemon Team Builder API**
 
 ## Objective
+The Pokemon Team Builder API is a GraphQL API that allows users to explore Pokémon data and build custom teams. It uses a dataset containing over a thousand Pokémon with detailed stats, types, and abilities.
 
-Design and develop a robust, well-documented API (REST or GraphQL) that allows users to retrieve and manage information from a dataset of your choice. The API must include JWT authentication, automated testing via Postman/Newman in a CI/CD pipeline, and be publicly deployed.
+The API includes three main resources: Pokemon (read-only), User, and Team (full CRUD). Users can register and log in using JWT authentication, then create and manage teams by adding or removing Pokémon. The API demonstrates key concepts such as single-endpoint GraphQL design, nested queries, and secure, stateless authentication.
 
-Choose a dataset (10000+ data points) that interests you — it should include at least one primary CRUD resource and two additional read-only resources. Sources like [Kaggle](https://www.kaggle.com/datasets), public APIs, or CSV files work well. Pick something you find interesting, as you will reuse this API in the next assignment (WT dashboard).
-
-*Describe your API in a few sentences: what dataset does it serve, what are its main resources, and what can users do with it?*
-
-## Implementation Type
 
 ## GraphQL
 
-## Links and Testing
-
 | | URL / File |
 |---|---|
-| **Production API** | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
-| **API Documentation** | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
-| **GraphQL Playground** (GraphQL only) | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
+| **Production API/API Documentation** | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
+| **GraphQL Playground** | *https://1dv027-assignment-api-design-production.up.railway.app/graphql* |
 | **Postman Collection** | `pokemon-api.postman_collection.json` |
 | **Production Environment** | `production.postman_environment.json` |
 
 **Run tests in the following way:**
 
 1. **Run manually in terminal** — no setup needed:
+- Clone the repository and run:
    ```
    npx newman run tests/pokemon-api.postman_collection.json -e tests/production.postman_environment.json
    ```
@@ -37,12 +31,13 @@ Choose a dataset (10000+ data points) that interests you — it should include a
 
 *Describe the dataset you chose:*
 
+
 | Field | Description |
 |---|---|
-| **Dataset source** | Kaggle, Pokemon API, CSV* |
+| **Dataset source** | Kaggle, Dataset of 32000 Pokemon Images & CSV, JSON https://www.kaggle.com/datasets/divyanshusingh369/complete-pokemon-library-32k-images-and-csv/data |
 | **Primary resource (CRUD)** | Team (id, name, user_id, user, memebers, createdAt) |
 | **Secondary resource 1 (read-only)** | Pokemon (id, name, etc) |
-| **Secondary resource 2 (read-only)** | TeamMember (id, teamId, pokemonId, team, pokemon) |
+| **Secondary resource 2 (read-only)** | User (id, email, teams) |
 
 
 ## Design Decisions
@@ -80,12 +75,102 @@ The GraphQL schema uses this structure with three main types, `Pokemon`, `User`,
 
 Queries cover read operations: `allPokemon`, `pokemonById`, `pokemonByType`, `searchPokemon`, `myTeams`, and `teamById`. Mutations cover authentication (`register`, `login`) and full CRUD for teams (`createTeam`, `updateTeam`, `deleteTeam`, `addPokemonToTeam`, `removePokemonFromTeam`).
 
-**Nested Queries**
+# Flow for creating a new user and making a new team
 
-A example of nested queries is `teamById` which is a single query that returns the full team with nested members and their pokemon:
+## 1️⃣ Register a new User
+```graphql
+mutation {
+  register(email: "testing@example.com", password: "pw123456") {
+    token
+    user {
+      id
+      email
+    }
+  }
+}
+```
+
+**Save the returned JWT token, it will be needed for all protected operations**
+
+## 2️⃣ Login user
+```graphql
+## (Optional) Login existing user
+mutation {
+  login(email: "testing@example.com", password: "pw123456") {
+    token
+    user {
+      id
+      email
+    }
+  }
+}
+```
+
+
+## 3️⃣ Authenticate requests
+
+**Include the token in your headers**
+
+```graphql
+Authorization: Bearer <your_token>
+```
+
+## 4️⃣ Search for Pokemon
+**Example: Find Pokémon by name**
 ```graphql
 query {
-  teamById(teamId: "1") {
+  searchPokemon(name: "charizard") {
+    id
+    name
+    type1
+    hp
+  }
+}
+```
+
+**Or filter by type:**
+```graphql
+query {
+  pokemonByType(type1: "Fire") {
+    id
+    name
+  }
+}
+```
+
+## 5️⃣ Create a new team
+```graphql
+mutation {
+  createTeam(name: "My First Team") {
+    id
+    name
+  }
+}
+```
+**(Requires authentication via Bearer token in the Authorization header)**
+
+##  6️⃣ Add Pokémon to the team
+```graphql
+mutation {
+  addPokemonToTeam(teamId: "TEAM_ID", pokemonId: "POKEMON_ID") {
+    id
+    members {
+      pokemon {
+        name
+      }
+    }
+  }
+}
+```
+
+**(You can repeat this step until your team has up to 6 Pokémon.)**
+
+##  7️⃣ View your team (nested query)
+
+An example of a nested queries is `teamById` which is a single query that returns the full team with nested members and their pokemon:
+```graphql
+query {
+  teamById(teamId: "TEAM_ID") {
     id
     name
     user {
@@ -102,7 +187,53 @@ query {
 }
 ```
 
-This allows the client to fetch a complete team with all pokemon data in a single request. This is something that would require multiple REST endpoints.
+**(This allows the client to fetch a complete team with all pokemon data in a single request. This is something that would require multiple REST endpoints.)**
+
+## 8️⃣ Update team name (optional)
+```graphql
+mutation {
+  updateTeam(teamId: "TEAM_ID", name: "Updated Team Name") {
+    id
+    name
+  }
+}
+```
+
+## 9️⃣ Remove a Pokémon (optional)
+```graphql
+mutation {
+  removePokemonFromTeam(teamId: "TEAM_ID", pokemonId: "POKEMON_ID") {
+    id
+  }
+}
+```
+
+## 🔟 Delete a team (optional)
+```graphql
+mutation {
+  deleteTeam(teamId: "TEAM_ID") {
+    id
+    name
+  }
+}
+```
+
+## 1️⃣1️⃣ View all your teams
+```graphql
+query {
+  myTeams {
+    id
+    name
+    members {
+      pokemon {
+        name
+      }
+    }
+  }
+}
+```
+
+
 
 **Single Endpoint**
 
@@ -112,7 +243,7 @@ All queries and mutations go through `/graphql`. This simplifies the API as ther
 
 My approach to error handling was to always check for errors first in my resolvers before any database operations run, to make sure errors are caught early and consistently.
 
-For simple checks such as validating that a user exists or that a pokemon is not already on a team, I use `throw new Error()` with a descriptive message. For repeated authorization checks I created a `validations` folder containing `teamValidation.js` which exports two reusable functions:
+For simple checks such as validating that a user exists or that a pokemon is not already on a team, I use `throw GraphQLError()` with a descriptive message. For repeated authorization checks I created a `validations` folder containing `teamValidation.js` which exports two reusable functions:
 
 - `checkAuth(context)` — throws if no valid JWT token is present
 - `getTeamAndVerifyOwnership(teamId, userId)` — fetches the team, throws if it does not exist or belongs to a different user
@@ -130,7 +261,7 @@ All errors follow GraphQL's standard error format:
     {
       "message": "Team does not exist!",
       "extensions": {
-        "code": "INTERNAL_SERVER_ERROR"
+        "code": "NOT_FOUND"
       }
     }
   ],
@@ -164,13 +295,10 @@ Deploying with Railway and setting up Docker was also a new challenge. Getting e
 
 **What I would do differently:**
 - Add pagination to all list queries from the start instead of as an afterthought
-- Set up CI/CD earlier in the process so tests run automatically from the beginning
+- Set up CI/CD early in the process so tests run automatically from the beginning
 - Batch the seed script to insert multiple records at once instead of one at a time since seeding 1200+ pokemon individually over a remote connection was very slow
 - Use Test Driven Development instead of making all the tests later when most of the code already was done
 
-## Acknowledgements
-
-*Resources, attributions, or shoutouts.*
 
 ## Requirements
 
@@ -181,8 +309,8 @@ Deploying with Railway and setting up Docker was also a new challenge. Getting e
 | Data acquisition — choose and document a dataset (1000+ data points) | [#1](../../issues/1) | :white_check_mark: |
 | Full CRUD for primary resource, read-only for secondary resources | [#2](../../issues/2) | :white_check_mark: |
 | JWT authentication for write operations | [#3](../../issues/3) | :white_check_mark: |
-| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | :white_large_square: |
-| Filtering and pagination for large result sets | [#17](../../issues/17) | :white_large_square: |
+| Error handling (400, 401, 404 with consistent format) | [#4](../../issues/4) | :white_check_mark: |
+| Filtering and pagination for large result sets | [#17](../../issues/17) | :white_check_mark: |
 
 
 ### Functional Requirements — GraphQL
